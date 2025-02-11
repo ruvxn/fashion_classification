@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import random
 from tensorflow.keras import datasets, layers, models
+from tensorflow.keras.optimizers import Adam
 
 #import dataset 
 fashion_train_dataset = pd.read_csv('dataset/fashion-mnist_train.csv')
@@ -12,18 +13,18 @@ fashion_test_dataset = pd.read_csv('dataset/fashion-mnist_test.csv')
 
 
 # numpy array for the training and testing data
-training = np.array('fashion_train_dataset', dtype = 'float32')
-testing = np.array('fashion_test_dataset', dtype = 'float32')
+training = np.array(fashion_train_dataset, dtype = 'float32')
+testing= np.array(fashion_test_dataset, dtype = 'float32')
 
 #normalising data
 X_train = training[:,1:]/255
 y_train = training[:, 0]
 
 X_test = testing[:,1:]/255
-y_train = testing[:, 0]
+y_test = testing[:, 0]
 
-X_train = X_train.reshape(X_train.shape[0], *(28,28,1))
-X_test = X_test.reshape(X_test.shape[0], *(28,28,1))
+X_train = X_train.reshape(X_train.shape[0], 28, 28, 1)
+X_test = X_test.reshape(X_test.shape[0], 28, 28, 1)
 
 #build the model
 
@@ -37,12 +38,11 @@ cnn.add(layers.MaxPooling2D(2,2))
 cnn.add(layers.Conv2D(64,(3,3), activation='relu'))
 cnn.add(layers.Flatten())
 
-cnn.add(layers.Conv2D(64, activation='relu'))
-cnn.add(layers.Conv2D(10, activation='softmax'))
+cnn.add(layers.Dense(64, activation='relu'))
+cnn.add(layers.Dense(10, activation='softmax'))
 
 #compile mode;
-
-cnn.compile(loss='sparse categorical crossentropy', optimizer='Adam(learning_rate=0.001)', metrics = 'accuracy')
+cnn.compile(loss='sparse_categorical_crossentropy', optimizer=Adam(learning_rate=0.001), metrics=['accuracy'])
 
 #train model
 epochs = 25
